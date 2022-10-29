@@ -1,10 +1,9 @@
 ﻿namespace MyApi.Dal
 {
-    public class Department: AggregateRoot
+    public class DataGroup : AggregateRoot
     {
         public Guid Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-
     }
 }
