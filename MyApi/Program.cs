@@ -1,5 +1,6 @@
 using JBHRIS.Api.Dal.JBHR.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using MyApi.Dal;
 using MyApi.Repositiry;
 
@@ -23,7 +24,7 @@ namespace MyApi
             });
             builder.Services.AddScoped<IUnitOfWork, JbhrUnitOfWork>();
             builder.Services.AddScoped<DbContext, MyDataContext>();
-            
+            builder.Services.AddSingleton<IMemoryCache, MemoryCache>();//使用AddScoped的話，每次都會new一個新的memoryCache，就會抓不到cache
             var app = builder.Build();
 
 

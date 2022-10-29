@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using MyApi.Dal;
 using MyApi.Repositiry;
 
@@ -10,15 +11,22 @@ namespace MyApi.Controllers
     public class EmployeeController : Controller
     {
         IUnitOfWork _unitOfWork;
-
-        public EmployeeController(IUnitOfWork unitOfWork)
+        readonly IMemoryCache _memoryCache;
+        public EmployeeController(IUnitOfWork unitOfWork, IMemoryCache memoryCache)
         {
             _unitOfWork = unitOfWork;
+            _memoryCache = memoryCache;
         }
         [HttpGet]
         public List<Employee> GetAll()
         {
-            return _unitOfWork.Repository<Employee>().Reads().ToList();
+            string key = $"Employee_GetAll";
+            return _memoryCache.GetOrCreate(key, entry =>
+            {
+                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+                return _unitOfWork.Repository<Employee>().Reads().ToList();
+            });
+
         }
         [HttpPost]
         public bool Create(CreateEmployeeDto create)
